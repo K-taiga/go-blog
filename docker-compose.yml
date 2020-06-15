@@ -1,0 +1,32 @@
+version: "3"
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    privileged: true
+    volumes:
+      - ./server:/app
+    command: /bin/bash
+    stdin_open: true
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: go-blog
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql:db
+    ports:
+      - 80:80
+    restart: always
+volumes:
+  mysql-data:
