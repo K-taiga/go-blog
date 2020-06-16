@@ -1,6 +1,7 @@
 FROM golang:latest
 
-WORKDIR /app
-# ADD . /go
+RUN apt-get update \
+  && apt-get install -y \
+  tree
 
-# CMD ["go", "run", "main.go"]
+WORKDIR /app
