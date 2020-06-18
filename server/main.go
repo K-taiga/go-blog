@@ -27,9 +27,15 @@ func createMux() *echo.Echo {
 	// echoを生成
 	e := echo.New()
 
+	// エラーハンドリングのためのmiddleware
 	e.Use(middleware.Recover())
+	// 各HTTPリクエストに関するログを出すためのmiddleware
 	e.Use(middleware.Logger())
+	// httpの応答を圧縮するためのmiddleware
 	e.Use(middleware.Gzip())
+
+	// 静的ファイルを利用するためのmiddleware jsとかcssとかを置いてあるディレクトリをインポートできる
+	e.Static("/css", "src/css")
 
 	return e
 }
