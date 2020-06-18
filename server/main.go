@@ -10,7 +10,7 @@ import (
 )
 
 // templateのパス
-const tmplPath = "src/template"
+const tmplPath = "src/template/"
 
 var e = createMux()
 
