@@ -36,6 +36,7 @@ func createMux() *echo.Echo {
 
 	// 静的ファイルを利用するためのmiddleware jsとかcssとかを置いてあるディレクトリをインポートできる
 	e.Static("/css", "src/css")
+	e.Static("/js", "src/js")
 
 	return e
 }
