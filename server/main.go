@@ -16,7 +16,7 @@ const tmplPath = "src/template/"
 var e = createMux()
 
 func main() {
-	// `/`のパスとarticleIndexの処理を紐付ける
+	// パスとarticleの処理を紐付ける
 	e.GET("/", articleIndex)
 	e.GET("/new", articleNew)
 	e.GET("/:id", articleShow)
@@ -68,7 +68,7 @@ func articleNew(c echo.Context) error {
 }
 
 func articleShow(c echo.Context) error {
-	// クエリパラメータのidをstr->intにする
+	// パスパラメータの:idをstr->intにする
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	data := map[string]interface{}{
