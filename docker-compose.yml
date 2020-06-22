@@ -14,7 +14,7 @@ services:
     environment:
       MYSQL_DATABASE: go-blog
       MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: Passw0rd!
       MYSQL_ROOT_PASSWORD: password
     ports:
       - "3306:3306"
