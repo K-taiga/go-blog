@@ -1,9 +1,17 @@
+// パッケージ名がmainのパッケージは扱いが特殊で、main関数を定義することでエントリポイント（プログラム実行時の処理開始位置）として使用される
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
+
+	// db
+	// blank(_) import => importしたパッケージと依存関係のあるパッケージをimportしてそれを初期化するために必要、依存関係を解決するためのimport
+	_ "github.com/go-sql-driver/mysql" // Using MySQL driver
+	"github.com/jmoiron/sqlx"          //sqlを書くデータマッパー型のORM
 
 	"github.com/flosch/pongo2"
 	"github.com/labstack/echo/v4"
@@ -15,7 +23,11 @@ const tmplPath = "src/template/"
 
 var e = createMux()
 
+var db *sqlx.DB
+
 func main() {
+	db = connectDB()
+
 	// パスとarticleの処理を紐付ける
 	e.GET("/", articleIndex)
 	e.GET("/new", articleNew)
@@ -108,4 +120,18 @@ func render(c echo.Context, file string, data map[string]interface{}) error {
 
 	// ステータスコード 200 で HTML データをレスポンス
 	return c.HTMLBlob(http.StatusOK, b)
+}
+
+func connectDB() *sqlx.DB {
+	dsn := os.Getenv("DSN")
+	db, err := sqlx.Open("mysql", dsn)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	// dbにpingが通るかチェック
+	if err := db.Ping(); err != nil {
+		e.Logger.Fatal(err)
+	}
+	log.Println("db connection succeeded")
+	return db
 }
