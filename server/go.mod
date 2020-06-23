@@ -9,4 +9,5 @@ require (
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/lib/pq v1.7.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
+	golang.org/x/sys v0.0.0-20200622214017-ed371f2e16b4 // indirect
 )
