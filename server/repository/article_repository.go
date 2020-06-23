@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"/model"
+	"app/model"
 )
 
 func ArticleList() ([]*model.Article, error) {
