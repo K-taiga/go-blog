@@ -123,6 +123,7 @@ func render(c echo.Context, file string, data map[string]interface{}) error {
 }
 
 func connectDB() *sqlx.DB {
+	// osパッケージで環境変数を取得
 	dsn := os.Getenv("DSN")
 	db, err := sqlx.Open("mysql", dsn)
 	if err != nil {
