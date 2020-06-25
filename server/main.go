@@ -27,6 +27,7 @@ func main() {
 	e.GET("/new", handler.ArticleNew)
 	e.GET("/:id", handler.ArticleShow)
 	e.GET("/:id/edit", handler.ArticleEdit)
+
 	// webサーバーをポート8080で起動
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -42,6 +43,8 @@ func createMux() *echo.Echo {
 	e.Use(middleware.Logger())
 	// httpの応答を圧縮するためのmiddleware
 	e.Use(middleware.Gzip())
+	// CSRF対策のmiddleware
+	e.Use(middleware.CSRF())
 
 	// 静的ファイルを利用するためのmiddleware jsとかcssとかを置いてあるディレクトリをインポートできる
 	e.Static("/css", "src/css")
