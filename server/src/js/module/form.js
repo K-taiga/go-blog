@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((body) => {
         console.log(JSON.stringify(body));
 
-        if (status === 200) {
+        if (status === 201) {
           // 成功時は一覧画面に遷移
           window.location.href = url;
         }
