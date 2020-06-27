@@ -21,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ".article-form__preview-body-contents"
   );
 
+  // csrfトークンを取得
+  const csrfToken = document.getElementsByName("csrf")[0].content;
+
   // 新規作成画面か編集画面かurlで判定するための構造体をセット
   const mode = { method: "", url: "" };
   if (window.location.pathname.endsWith("new")) {
@@ -49,7 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // プレビューを開くイベント
   previewOpenBtn.addEventListener("click", (event) => {
     // form の「本文」に入力された Markdown を HTML に変換してプレビューに埋め込み
-    articleFormPreviewTextArea.innerHTML = md.render(articleFormBodyTextArea.value);
+    articleFormPreviewTextArea.innerHTML = md.render(
+      articleFormBodyTextArea.value
+    );
 
     // 入力フォームを非表示
     articleFormBody.style.display = "none";
@@ -74,5 +79,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 指定のURLに遷移
     window.location.href = url;
+  });
+
+  // 保存処理を実行するイベント
+  saveBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    // フォームに入力された内容を取得
+    const fd = new FormData(form);
+
+    let status;
+
+    // fetch API を利用してリクエストを送信
+    fetch(url, {
+      method: method,
+      headers: { "X-CSRF-Token": csrfToken },
+      body: fd,
+    })
+      .then((res) => {
+        status = res.status;
+        return res.json();
+      })
+      .then((body) => {
+        console.log(JSON.stringify(body));
+
+        if (status === 200) {
+          // 成功時は一覧画面に遷移
+          window.location.href = url;
+        }
+
+        if (body.ValidationErrors) {
+          // バリデーションエラーがある場合
+        }
+      })
+      .catch((err) => console.error(err));
   });
 });
