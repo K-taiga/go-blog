@@ -91,8 +91,7 @@ func ArticleCreate(c echo.Context) error {
 	if err := c.Validate(&article); err != nil {
 		c.Logger().Error(err.Error())
 
-		// outのMessageにエラーを格納
-		out.Message = err.Error()
+		out.ValidationErrors = article.ValidationErrors(err)
 
 		// エラーがあればUnprocessable Entityで返す
 		return c.JSON(http.StatusUnprocessableEntity, out)

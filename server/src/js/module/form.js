@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ".article-form__preview-body-contents"
   );
 
+  const errors = document.querySelector(".article-form__errors");
+  const errorTmpl = document.querySelector(".article-form__error-tmpl")
+    .firstElementChild;
+
   // csrfトークンを取得
   const csrfToken = document.getElementsByName("csrf")[0].content;
 
@@ -85,6 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
   saveBtn.addEventListener("click", (event) => {
     event.preventDefault();
 
+    // errorsの初期化
+    errors.innerHTML = null;
+
     // フォームに入力された内容を取得
     const fd = new FormData(form);
 
@@ -110,8 +117,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (body.ValidationErrors) {
           // バリデーションエラーがある場合
+          console.log("error");
+          showErrors(body.ValidationErrors);
         }
       })
       .catch((err) => console.error(err));
   });
+
+  const showErrors = (messages) => {
+    // 引数が配列
+    if (Array.isArray(messages) && messages.length != 0) {
+      // 複数メッセージを格納するためのフラグメントを作成
+      // Fragment =  Document の軽量版
+      // 重要な違いは、文書の断片(Fragment)はアクティブな文書ツリー構造の一部ではないため、断片に対して変更を行っても、文書に影響したり、再フローを起こしたり、変更が行われたときに性能上の影響を及ぼしたりすることがない
+      const fragment = document.createDocumentFragment();
+
+      // メッセージの処理
+      messages.forEach((message) => {
+        // 単一メッセージの格納
+        const frag = document.createDocumentFragment();
+
+        // エラーのtemplateをクローンしてfrageに追加
+        frag.appendChild(errorTmpl.cloneNode(true));
+
+        // エラー要素にメッセージを追加
+        frag.querySelector(".article-form__error").innerHTML = message;
+
+        // fragを親に追加
+        fragment.appendChild(frag);
+      });
+
+      // エラーメッセージの表示エリア（要素）にメッセージを追加
+      errors.appendChild(fragment);
+    }
+  };
 });
