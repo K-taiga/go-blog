@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const mode = { method: "", url: "" };
   if (window.location.pathname.endsWith("new")) {
     mode.method = "POST";
-    mode.url = "/";
+    mode.url = "/articles";
   } else if (window.location.pathname.endsWith("edit")) {
     mode.method = "PATCH";
     //'/'以降の/:articleIDを取得する
-    mode.url = `/${window.location.pathname.split("/")[1]}`;
+    mode.url = `/${window.location.pathname.split("/")[2]}`;
   }
   const { method, url } = mode;
 
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let status;
 
     // fetch API を利用してリクエストを送信
-    fetch(url, {
+    fetch(`/api${url}`, {
       method: method,
       headers: { "X-CSRF-Token": csrfToken },
       body: fd,

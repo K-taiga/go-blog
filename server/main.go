@@ -36,12 +36,17 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 func main() {
 	db = connectDB()
 	repository.SetDB(db)
+	// 記事一覧画面には "/" と "/articles" の両方でアクセスできる
 	e.GET("/", handler.ArticleIndex)
-	e.GET("/new", handler.ArticleNew)
-	e.GET("/:id", handler.ArticleShow)
-	e.GET("/:id/edit", handler.ArticleEdit)
-	e.POST("/", handler.ArticleCreate)
-	e.DELETE("/:id", handler.ArticleDelete)
+	e.GET("/articles", handler.ArticleIndex)
+	e.GET("/articles/new", handler.ArticleNew)
+	e.GET("/articles/:articleID", handler.ArticleShow)
+	e.GET("/articles/:articleID/edit", handler.ArticleEdit)
+	// HTML ではなく JSON を返却する処理は "/api" で開始する
+	// 記事に関する処理なので "/articles"
+	e.GET("/api/articles", handler.ArticleList)
+	e.POST("/api/articles", handler.ArticleCreate)
+	e.DELETE("/api/articles/:articleID", handler.ArticleDelete)
 
 	// webサーバーをポート8080で起動
 	e.Logger.Fatal(e.Start(":8080"))

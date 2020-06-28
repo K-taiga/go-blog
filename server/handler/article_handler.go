@@ -18,6 +18,11 @@ type ArticleCreateOutput struct {
 }
 
 func ArticleIndex(c echo.Context) error {
+	// "/articles" のパスでリクエストがあったら "/" にリダイレクト
+	if c.Request().URL.Path == "/articles" {
+		c.Redirect(http.StatusPermanentRedirect, "/")
+	}
+
 	// リポジトリのDB取得のindex処理を呼び出し
 	articles, err := repository.ArticleListByCursor(0)
 
@@ -27,8 +32,16 @@ func ArticleIndex(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	// 取得した記事の最後のIDをカーソルとして設定
+	var cursor int
+	if len(articles) != 0 {
+		// 配列は0スタートのため
+		cursor = articles[len(articles)-1].ID
+	}
+
 	data := map[string]interface{}{
 		"Articles": articles,
+		"Cursor":   cursor,
 	}
 
 	return render(c, "article/index.html", data)
@@ -45,7 +58,7 @@ func ArticleNew(c echo.Context) error {
 
 func ArticleShow(c echo.Context) error {
 	// パスパラメータの:idをstr->intにする
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("articleID"))
 
 	data := map[string]interface{}{
 		"Message": "Article Show",
@@ -57,7 +70,7 @@ func ArticleShow(c echo.Context) error {
 }
 
 func ArticleEdit(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("articleID"))
 
 	data := map[string]interface{}{
 		"Message": "Article Edit",
@@ -122,7 +135,7 @@ func ArticleCreate(c echo.Context) error {
 func ArticleDelete(c echo.Context) error {
 	// パスパラメータから記事 ID を取得
 	// 文字列型で取得されるので、strconv パッケージを利用して数値型
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("articleID"))
 
 	if err := repository.ArticleDelete(id); err != nil {
 		c.Logger().Error(err.Error())
@@ -132,4 +145,23 @@ func ArticleDelete(c echo.Context) error {
 
 	// 成功時はステータスコード 200 を返却
 	return c.JSON(http.StatusOK, fmt.Sprintf("Article %d is deleted.", id))
+}
+
+func ArticleList(c echo.Context) error {
+	cursor, _ := strconv.Atoi(c.QueryParam("cursor"))
+
+	// リポジトリの処理を呼び出して記事の一覧データを取得
+	// 引数にカーソルの値を渡して、ID のどの位置から 10 件取得するかを指定
+	articles, err := repository.ArticleListByCursor(cursor)
+
+	if err != nil {
+		// サーバーのログにエラー内容を出力します。
+		c.Logger().Error(err.Error())
+
+		// HTML ではなく JSON 形式でデータのみを返却するため、
+		// c.HTMLBlob() ではなく c.JSON() を呼び出す
+		return c.JSON(http.StatusInternalServerError, "")
+	}
+
+	return c.JSON(http.StatusOK, articles)
 }
