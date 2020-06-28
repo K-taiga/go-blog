@@ -3,7 +3,6 @@ package handler
 import (
 	"app/model"
 	"app/repository"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -18,19 +17,19 @@ type ArticleCreateOutput struct {
 }
 
 func ArticleIndex(c echo.Context) error {
-	// repositoryのパッケージからArticleListを取得
-	articles, err := repository.ArticleList()
+	// リポジトリのDB取得のindex処理を呼び出し
+	articles, err := repository.ArticleListByCursor(0)
+
 	if err != nil {
-		log.Println(err.Error())
+		c.Logger().Error(err.Error())
+
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	// キーがstring,valueがinterfaceのものをdataに実装
 	data := map[string]interface{}{
-		"Message":  "Article Index",
-		"Now":      time.Now(),
 		"Articles": articles,
 	}
+
 	return render(c, "article/index.html", data)
 }
 

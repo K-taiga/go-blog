@@ -3,22 +3,29 @@ package repository
 import (
 	"app/model"
 	"database/sql"
+	"math"
 	"time"
 )
 
-func ArticleList() ([]*model.Article, error) {
-	query := `SELECT * FROM articles;`
+func ArticleListByCursor(cursor int) ([]*model.Article, error) {
+	// cursorの値が0以下ならMaxIntにする
+	if cursor <= 0 {
+		cursor = math.MaxInt32
+	}
+	// ID の降順に記事データを 10 件取得
+	query := `SELECT * FROM articles WHERE id < ? ORDER BY id desc	LIMIT 10`
 
-	// データベースから取得した値を格納する変数を宣言
-	// modelのArticle構造体を格納する配列
-	var articles []*model.Article
+	// クエリ結果を入れるスライス
+	// 10件までのためcapacityを指定
+	articles := make([]*model.Article, 0, 10)
 
-	// Query を実行して、取得した値を変数に格納
-	if err := db.Select(&articles, query); err != nil {
+	// クエリの実行
+	if err := db.Select(&articles, query, cursor); err != nil {
 		return nil, err
 	}
 
 	return articles, nil
+
 }
 
 func ArticleCreate(article *model.Article) (sql.Result, error) {
