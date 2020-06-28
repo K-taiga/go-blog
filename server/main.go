@@ -64,7 +64,7 @@ func createMux() *echo.Echo {
 	e.Static("/css", "src/css")
 	e.Static("/js", "src/js")
 
-	e.Validator = &CutomValidator{validator: validator.New()}
+	e.Validator = &CustomValidator{validator: validator.New()}
 
 	return e
 }
