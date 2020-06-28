@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 
+	"gopkg.in/go-playground/validator.v9"
+
 	// db
 	// blank(_) import => importしたパッケージと依存関係のあるパッケージをimportしてそれを初期化するために必要、依存関係を解決するためのimport
 	_ "github.com/go-sql-driver/mysql" // Using MySQL driver
@@ -19,6 +21,17 @@ import (
 var e = createMux()
 
 var db *sqlx.DB
+
+// まずはカスタムバリデータを作成
+// CustomValidatorのstruct
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+// Validatorのメソッドを構造体に追加
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
+}
 
 func main() {
 	db = connectDB()
@@ -50,6 +63,8 @@ func createMux() *echo.Echo {
 	// 静的ファイルを利用するためのmiddleware jsとかcssとかを置いてあるディレクトリをインポートできる
 	e.Static("/css", "src/css")
 	e.Static("/js", "src/js")
+
+	e.Validator = &CutomValidator{validator: validator.New()}
 
 	return e
 }
