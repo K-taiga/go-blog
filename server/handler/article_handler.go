@@ -56,19 +56,6 @@ func ArticleNew(c echo.Context) error {
 	return render(c, "article/new.html", data)
 }
 
-func ArticleShow(c echo.Context) error {
-	// パスパラメータの:idをstr->intにする
-	id, _ := strconv.Atoi(c.Param("articleID"))
-
-	data := map[string]interface{}{
-		"Message": "Article Show",
-		"Now":     time.Now(),
-		"ID":      id,
-	}
-
-	return render(c, "article/show.html", data)
-}
-
 func ArticleEdit(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("articleID"))
 
