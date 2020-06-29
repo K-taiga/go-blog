@@ -165,3 +165,23 @@ func ArticleList(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, articles)
 }
+
+func ArticleShow(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("articleID"))
+
+	article, err := repository.ArticleGetByID(id)
+
+	if err != nil {
+		c.Logger().Error(err.Error())
+
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	// テンプレートに渡すデータを map に格納
+	data := map[string]interface{}{
+		"Article": article,
+	}
+
+	// テンプレートファイルとデータを指定して HTML を生成し、クライアントに返却
+	return render(c, "article/show.html", data)
+}
