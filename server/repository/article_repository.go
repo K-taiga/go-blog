@@ -87,3 +87,30 @@ func ArticleGetByID(id int) (*model.Article, error) {
 
 	return &article, nil
 }
+
+func ArticleUpdate(article *model.Article) (sql.Result, error) {
+	now := time.Now()
+
+	article.Updated = now
+
+	// クエリ文字列を生成します。
+	query := `UPDATE articles SET title = :title, body = :body, updated = :updated WHERE id = :id;`
+
+	tx := db.MustBegin()
+
+	// クエリ文字列と引数で渡ってきた構造体を指定して、SQL を実行
+	// クエリ文字列内の :title, :body, :id には、
+	// 第 2 引数の Article 構造体の Title, Body, ID が bind されます。
+	// 構造体に db タグで指定した値が紐付け
+	res, err := tx.NamedExec(query, article)
+
+	if err != nil {
+		tx.Rollback()
+
+		return nil, err
+	}
+
+	tx.Commit()
+
+	return res, nil
+}
