@@ -33,10 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname.endsWith("new")) {
     mode.method = "POST";
     mode.url = "/articles";
-  } else if (window.location.pathname.endsWith("edit")) {
-    mode.method = "PATCH";
-    //'/'以降の/:articleIDを取得する
-    mode.url = `/${window.location.pathname.split("/")[2]}`;
+  } else if (window.location.pathname.endsWith('edit')) {
+    // 更新時の HTTP メソッドは PATCH 
+    mode.method = 'PATCH';
+    // 更新リクエスト、および戻るボタンの遷移先のパスは "/articles/:articleID"
+    mode.url = `/articles/${window.location.pathname.split('/')[2]}`;
   }
   const { method, url } = mode;
 
@@ -110,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((body) => {
         console.log(JSON.stringify(body));
 
-        if (status === 201) {
+        if (status === 200 || status === 201) {
           // 成功時は一覧画面に遷移
           window.location.href = url;
         }
